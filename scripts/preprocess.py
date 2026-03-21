@@ -24,7 +24,7 @@ def load_dataset(url, test_size=0.2, random_state=42):
         raise ValueError("Il CSV deve contenere le colonne 'text' e 'category'")
 
     # Seleziona feature e target
-    X = df['text']
+    X = df['clean_text']
     y = df['category']
 
     # Split train/test
