@@ -67,13 +67,13 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
         accuracy = (predictions == labels).mean()
         return {"accuracy": accuracy}
 
-        trainer = Trainer(
+    trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
         compute_metrics=compute_metrics
-        )
+    )
 
     # 5. Avvia fine-tuning
     trainer.train()
