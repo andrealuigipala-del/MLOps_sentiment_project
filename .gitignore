@@ -1,0 +1,4 @@
+!git rm -r --cached results
+!git add .gitignore
+!git commit -m "Ignore large model checkpoints"
+!git push origin main
