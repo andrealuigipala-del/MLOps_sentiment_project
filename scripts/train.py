@@ -53,7 +53,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
         per_device_eval_batch_size=batch_size,
         logging_steps=50,
         save_strategy="epoch",
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
         save_total_limit=1,
@@ -67,14 +67,13 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
         accuracy = (predictions == labels).mean()
         return {"accuracy": accuracy}
 
-    trainer = Trainer(
+        trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
-        tokenizer=tokenizer,
         compute_metrics=compute_metrics
-    )
+        )
 
     # 5. Avvia fine-tuning
     trainer.train()
