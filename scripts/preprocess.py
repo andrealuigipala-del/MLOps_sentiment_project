@@ -20,7 +20,7 @@ def load_dataset(url, test_size=0.2, random_state=42):
     df = pd.read_csv(url)
 
     # Controlla che ci siano le colonne attese
-    if 'text' not in df.columns or 'category' not in df.columns:
+    if 'clean_text' not in df.columns or 'category' not in df.columns:
         raise ValueError("Il CSV deve contenere le colonne 'text' e 'category'")
 
     # Seleziona feature e target
