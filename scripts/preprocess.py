@@ -25,6 +25,7 @@ def load_dataset(url, test_size=0.2, random_state=42):
     
     df = df.dropna(subset=['clean_text', 'category'])
     df['clean_text'] = df['clean_text'].astype(str)   # testo → stringa
+    
     df['category'] = df['category'].astype(int)
     
     # Seleziona feature e target
