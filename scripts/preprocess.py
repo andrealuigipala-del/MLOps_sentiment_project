@@ -19,6 +19,8 @@ def load_dataset(url, test_size=0.2, random_state=42):
     # Carica il CSV dall'URL
     df = pd.read_csv(url)
 
+    df = df.dropna(subset=['clean_text', 'category'])
+
     # Controlla che ci siano le colonne attese
     if 'clean_text' not in df.columns or 'category' not in df.columns:
         raise ValueError("Il CSV deve contenere le colonne 'clean_text' e 'category'")
