@@ -78,6 +78,10 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
     # 5. Avvia fine-tuning
     trainer.train()
 
+    save_path = "./results/final_model"
+    model.save_pretrained(save_path)
+    tokenizer.save_pretrained(save_path)
+    
     return trainer, model, tokenizer
 
 # Esempio di utilizzo
