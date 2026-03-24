@@ -26,6 +26,7 @@ def evaluate_model(model_dir, X, y):
     
     f1_macro = f1_score(y, preds, average="macro")
     report = classification_report(y, preds, digits=4)
+    print("\nMIAO!")
     return f1_macro, report
 
 def main():
@@ -38,9 +39,6 @@ def main():
     df = pd.read_csv(DATA_PATH)
     X_test = df['clean_text'].tolist()
     y_test = df['category'].tolist()
-    df['clean_text'] = df['clean_text'].astype(str)   # testo → stringa
-    df['category'] = df['category'] + 1
-    df['category'] = df['category'].astype(int)
 
     # Valuta il nuovo modello
     print("Valutando il modello appena addestrato...")
