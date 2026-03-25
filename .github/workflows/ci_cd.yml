@@ -1,0 +1,30 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install transformers torch pandas scikit-learn
+
+    - name: Run training
+      run: python scripts/train.py
+
+    - name: Run evaluation
+      run: python scripts/evaluate_and_save.py
