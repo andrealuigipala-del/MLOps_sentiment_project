@@ -13,20 +13,30 @@ MODEL_DIR = "./final_model"
 NEW_MODEL_DIR = "./temp_model"  # dove dovrebbe essere il modello appena allenato
 DATA_PATH = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_Final_Project/refs/heads/main/Twitter_Data.csv"
 
-def evaluate_model(model_dir, X, y):
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from sklearn.metrics import f1_score, classification_report
+
+def evaluate_model(model_dir, X, y, batch_size=16):
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
     model.eval()
-    
-    inputs = tokenizer(X, padding=True, truncation=True, return_tensors="pt")
-    with torch.no_grad():
-        outputs = model(**inputs)
-        logits = outputs.logits
-        preds = torch.argmax(logits, dim=1).tolist()
-    
-    f1_macro = f1_score(y, preds, average="macro")
-    report = classification_report(y, preds, digits=4)
-    print("\nMIAO!")
+
+    all_preds = []
+
+    # Elaborazione a batch
+    for i in range(0, len(X), batch_size):
+        batch_texts = X[i:i+batch_size]
+        inputs = tokenizer(batch_texts, padding=True, truncation=True, return_tensors="pt")
+        with torch.no_grad():
+            outputs = model(**inputs)
+            logits = outputs.logits
+            batch_preds = torch.argmax(logits, dim=1).tolist()
+            all_preds.extend(batch_preds)
+
+    f1_macro = f1_score(y, all_preds, average="macro")
+    report = classification_report(y, all_preds, digits=4)
+    print("miao!")
     return f1_macro, report
 
 def main():
