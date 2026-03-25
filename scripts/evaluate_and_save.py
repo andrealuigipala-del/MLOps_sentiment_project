@@ -13,10 +13,6 @@ MODEL_DIR = "./final_model"
 NEW_MODEL_DIR = "./temp_model"  # dove dovrebbe essere il modello appena allenato
 DATA_PATH = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_Final_Project/refs/heads/main/Twitter_Data.csv"
 
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from sklearn.metrics import f1_score, classification_report
-
 def evaluate_model(model_dir, X, y, batch_size=16):
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
