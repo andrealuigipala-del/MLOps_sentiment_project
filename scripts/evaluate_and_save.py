@@ -2,6 +2,7 @@
 
 import os
 import torch
+import random
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from sklearn.metrics import f1_score, classification_report
 import pandas as pd
@@ -57,15 +58,21 @@ def main():
     X_test = df['clean_text'].fillna("").astype(str).tolist()
     y_test = df['category'].tolist()
 
-    # Valuta il nuovo modello
+    # Valuta il nuovo modello e riduce i campioni per la valutazione del modello
+
+    sample_size = 100 # riduce i campioni per la valutazione del modello
+    indices = random.sample(range(len(X_test)), sample_size)
+    X_test_small = X_test.iloc[indices].tolist()
+    y_test_small = y_test.iloc[indices].tolist()
+    
     print("Valutando il modello appena addestrato...")
-    new_f1, new_report = evaluate_model(NEW_MODEL_DIR, X_test, y_test)
+    new_f1, new_report = evaluate_model(NEW_MODEL_DIR, X_test_small, y_test_small)
     print("Nuovo modello F1 macro:", new_f1)
 
     # Controlla se esiste il modello vecchio
     if os.path.exists(MODEL_DIR):
         print("Valutando il modello salvato precedentemente...")
-        old_f1, _ = evaluate_model(MODEL_DIR, X_test, y_test)
+        old_f1, _ = evaluate_model(MODEL_DIR, X_test_small, y_test_small)
         print("Vecchio modello F1 macro:", old_f1)
     else:
         old_f1 = -1  # non esiste, quindi il nuovo modello va salvato
