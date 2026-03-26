@@ -91,5 +91,5 @@ if __name__ == "__main__":
     url = "./data/src/Twitter_Data.csv"
     X_train, X_test, y_train, y_test = load_dataset(url)
 
-    trainer, model, tokenizer = fine_tune_model(X_train[:5000], y_train[:5000],
-    X_test[:1000], y_test[:1000])
+    trainer, model, tokenizer = fine_tune_model(X_train[:500], y_train[:500],
+    X_test[:100], y_test[:100])
