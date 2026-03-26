@@ -18,7 +18,7 @@ def evaluate_model(model_dir, X, y, batch_size=16):
     "cardiffnlp/twitter-roberta-base-sentiment-latest",
     use_fast=True
     )
-    model = AutoModelForSequenceClassification.from_pretrained(model_dir, use_fast=False)
+    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
     model.eval()
 
     all_preds = []
