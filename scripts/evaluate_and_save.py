@@ -55,8 +55,8 @@ def main():
 
     # Carica dataset di test
     df = pd.read_csv(DATA_PATH)
-    X_test = df['clean_text'].fillna("").astype(str).tolist()
-    y_test = df['category'].tolist()
+    X_test = df['clean_text'].fillna("").astype(str)
+    y_test = df['category'].astype(int)
 
     # Valuta il nuovo modello e riduce i campioni per la valutazione del modello
 
