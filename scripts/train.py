@@ -88,7 +88,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
 if __name__ == "__main__":
     from scripts.preprocess import load_dataset
 
-    url = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_Final_Project/refs/heads/main/Twitter_Data.csv"
+    url = "./data/Twitter_Data.csv"
     X_train, X_test, y_train, y_test = load_dataset(url)
 
     trainer, model, tokenizer = fine_tune_model(X_train, y_train, X_test, y_test)
