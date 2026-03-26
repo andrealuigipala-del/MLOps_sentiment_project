@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
 
   
-    hub_token = os.environ.get("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")  # GitHub secret
+    hub_token = os.environ.get("HF_TOKEN")  # GitHub secret
     hub_model_id = "andrealuigipala/trained-model"
     
     if hub_token:
