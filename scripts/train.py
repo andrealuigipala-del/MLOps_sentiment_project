@@ -98,3 +98,13 @@ if __name__ == "__main__":
 
     model.save_pretrained(save_path)
     tokenizer.save_pretrained(save_path)
+
+    import os
+    
+    save_path = "./data/results/final_model"
+    model.save_pretrained(save_path)
+    tokenizer.save_pretrained(save_path)
+    
+    print("CONTENUTO CARTELLA DOPO SALVATAGGIO:")
+    print(os.listdir("./data/results"))
+    print(os.listdir(save_path))
