@@ -14,7 +14,10 @@ HF_REPO = "trained-model"        # base del repo
 
 # Funzione di valutazione
 def evaluate_model(model_dir, X, y, batch_size=16):
-    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(
+    "cardiffnlp/twitter-roberta-base-sentiment-latest",
+    use_fast=True
+    )
     model = AutoModelForSequenceClassification.from_pretrained(model_dir, use_fast=False)
     model.eval()
 
