@@ -24,6 +24,7 @@ jobs:
         pip install torch torchvision torchaudio
         pip install "transformers[torch]" accelerate datasets
         pip install scikit-learn pandas numpy
+        pip install protobuf
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
