@@ -94,7 +94,7 @@ if __name__ == "__main__":
     trainer, model, tokenizer = fine_tune_model(X_train[:50], y_train[:50],
     X_test[:10], y_test[:10])
   
-    save_path = "./results/final_model"
+    save_path = "./data/results/final_model"
 
     model.save_pretrained(save_path)
     tokenizer.save_pretrained(save_path)
