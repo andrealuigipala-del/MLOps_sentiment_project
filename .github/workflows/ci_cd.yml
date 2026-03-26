@@ -47,5 +47,6 @@ jobs:
 
     - name: Run evaluation
       env:
+        HF_USERNAME: ${{ secrets.HF_USERNAME }}
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: python scripts/evaluate_and_save.py
