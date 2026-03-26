@@ -91,10 +91,10 @@ if __name__ == "__main__":
     url = "./data/src/Twitter_Data.csv"
     X_train, X_test, y_train, y_test = load_dataset(url)
 
+    trainer, model, tokenizer = fine_tune_model(X_train[:50], y_train[:50],
+    X_test[:10], y_test[:10])
+  
     save_path = "./results/final_model"
 
     model.save_pretrained(save_path)
     tokenizer.save_pretrained(save_path)
-
-    trainer, model, tokenizer = fine_tune_model(X_train[:50], y_train[:50],
-    X_test[:10], y_test[:10])
