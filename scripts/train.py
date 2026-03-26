@@ -102,26 +102,26 @@ if __name__ == "__main__":
     hub_token = os.environ.get("HF_TOKEN")  # GitHub secret
     hub_model_id = "andrealuigipala/trained-model"
     
-    if hub_token:
-        print("Push del modello su HuggingFace Hub...")
-        # trainer.push_to_hub()
-        model.push_to_hub(hub_model_id, token=hub_token)
-        tokenizer.push_to_hub(hub_model_id, token=hub_token)
-        print(f"Modello pushato su HuggingFace Hub: {hub_model_id}")
-    else:
-        print("HF_TOKEN non trovato, modello salvato solo in locale.")
+    # if hub_token:
+    #     print("Push del modello su HuggingFace Hub...")
+    #     # trainer.push_to_hub()
+    #     model.push_to_hub(hub_model_id, token=hub_token)
+    #     tokenizer.push_to_hub(hub_model_id, token=hub_token)
+    #     print(f"Modello pushato su HuggingFace Hub: {hub_model_id}")
+    # else:
+    #     print("HF_TOKEN non trovato, modello salvato solo in locale.")
 
     # save_path = "./data/results/final_model"
 
     # model.save_pretrained(save_path)
     # tokenizer.save_pretrained(save_path)
 
-    # import os
+    import os
     
-    # save_path = "./data/results/final_model"
-    # model.save_pretrained(save_path)
-    # tokenizer.save_pretrained(save_path)
+    save_path = "./data/results/final_model"
+    model.save_pretrained(save_path)
+    tokenizer.save_pretrained(save_path)
     
-    # print("CONTENUTO CARTELLA DOPO SALVATAGGIO:")
-    # print(os.listdir("./data/results"))
-    # print(os.listdir(save_path))
+    print("CONTENUTO CARTELLA DOPO SALVATAGGIO:")
+    print(os.listdir("./data/results"))
+    print(os.listdir(save_path))
