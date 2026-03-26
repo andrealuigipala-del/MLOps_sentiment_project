@@ -21,7 +21,8 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install transformers torch pandas scikit-learn datasets
+        pip install torch torchvision torchaudio
+        pip install transformers[torch] accelerate datasets
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
