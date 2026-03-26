@@ -55,6 +55,7 @@ def main():
 
     # Carica dataset di test
     df = pd.read_csv(DATA_PATH)
+    df = df.dropna(subset=['category', 'clean_text'])
     X_test = df['clean_text'].fillna("").astype(str)
     y_test = df['category'].astype(int)
 
