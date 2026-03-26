@@ -37,6 +37,7 @@ def evaluate_model(model_dir, X, y, batch_size=16):
 
 def main():
     # Controlla se esiste un nuovo modello
+    NEW_MODEL_DIR = ".data/results/final_model"
     if not os.path.exists(NEW_MODEL_DIR):
         print(f"ATTENZIONE: Nessun modello nuovo trovato in {NEW_MODEL_DIR}. Esco.")
         return
