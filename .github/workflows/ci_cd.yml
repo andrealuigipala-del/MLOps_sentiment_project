@@ -23,6 +23,9 @@ jobs:
         pip install --upgrade pip
         pip install transformers torch pandas scikit-learn datasets
 
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+
     - name: Run training
       run: python scripts/train.py
 
