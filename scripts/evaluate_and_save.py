@@ -38,6 +38,16 @@ def evaluate_model(model_dir, X, y, batch_size=16):
 def main():
     # Controlla se esiste un nuovo modello
     NEW_MODEL_DIR = ".data/results/final_model"
+
+    import os
+
+    MODEL_PATH = "./data/results/final_model"
+    
+    print("DEBUG - esiste cartella?", os.path.exists(MODEL_PATH))
+    
+    if os.path.exists(MODEL_PATH):
+        print("DEBUG - contenuto cartella:", os.listdir(MODEL_PATH))
+    
     if not os.path.exists(NEW_MODEL_DIR):
         print(f"ATTENZIONE: Nessun modello nuovo trovato in {NEW_MODEL_DIR}. Esco.")
         return
