@@ -22,26 +22,30 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install torch torchvision torchaudio
-        pip install transformers[torch] accelerate datasets
-        pip install scikit-learn pandas datasets numpy
+        pip install "transformers[torch]" accelerate datasets
+        pip install scikit-learn pandas numpy
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
 
     - name: Run training
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: python scripts/train.py
 
-    - name: Upload model
+    - name: Upload trained model as artifact
       uses: actions/upload-artifact@v4
       with:
         name: trained-model
         path: ./data/results/final_model
 
-    - name: Download model
+    - name: Download trained model artifact
       uses: actions/download-artifact@v4
       with:
         name: trained-model
         path: ./data/results/final_model
 
     - name: Run evaluation
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: python scripts/evaluate_and_save.py
