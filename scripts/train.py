@@ -104,8 +104,9 @@ if __name__ == "__main__":
     
     if hub_token:
         print("Push del modello su HuggingFace Hub...")
-        model.push_to_hub(hub_model_id, token=hub_token)
-        tokenizer.push_to_hub(hub_model_id, token=hub_token)
+        trainer.push_to_hub()
+        # model.push_to_hub(hub_model_id, token=hub_token)
+        # tokenizer.push_to_hub(hub_model_id, token=hub_token)
         print(f"Modello pushato su HuggingFace Hub: {hub_model_id}")
     else:
         print("HF_TOKEN non trovato, modello salvato solo in locale.")
