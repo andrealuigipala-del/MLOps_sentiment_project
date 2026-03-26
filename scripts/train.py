@@ -4,6 +4,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trai
 from datasets import Dataset
 import torch
 import numpy as np
+from huggingface_hub import login
+import os
 
 def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twitter-roberta-base-sentiment-latest",
                     output_dir="./results", epochs=3, batch_size=16):
@@ -57,7 +59,8 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
         save_total_limit=1,
-        push_to_hub=False  # eventualmente True se vuoi caricare su HuggingFace
+        push_to_hub=False,  # ora farà il push sul Hub
+
     )
 
     # 4. Trainer
@@ -93,18 +96,31 @@ if __name__ == "__main__":
 
     trainer, model, tokenizer = fine_tune_model(X_train[:50], y_train[:50],
     X_test[:10], y_test[:10])
+
+
   
-    save_path = "./data/results/final_model"
-
-    model.save_pretrained(save_path)
-    tokenizer.save_pretrained(save_path)
-
-    import os
+    hub_token = os.environ.get("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")  # GitHub secret
+    hub_model_id = "andrealuigipala/trained-model"
     
-    save_path = "./data/results/final_model"
-    model.save_pretrained(save_path)
-    tokenizer.save_pretrained(save_path)
+    if hub_token:
+        print("Push del modello su HuggingFace Hub...")
+        model.push_to_hub(hub_model_id, use_auth_token=hub_token)
+        tokenizer.push_to_hub(hub_model_id, use_auth_token=hub_token)
+        print(f"Modello pushato su HuggingFace Hub: {hub_model_id}")
+    else:
+        print("HF_TOKEN non trovato, modello salvato solo in locale.")
+
+    # save_path = "./data/results/final_model"
+
+    # model.save_pretrained(save_path)
+    # tokenizer.save_pretrained(save_path)
+
+    # import os
     
-    print("CONTENUTO CARTELLA DOPO SALVATAGGIO:")
-    print(os.listdir("./data/results"))
-    print(os.listdir(save_path))
+    # save_path = "./data/results/final_model"
+    # model.save_pretrained(save_path)
+    # tokenizer.save_pretrained(save_path)
+    
+    # print("CONTENUTO CARTELLA DOPO SALVATAGGIO:")
+    # print(os.listdir("./data/results"))
+    # print(os.listdir(save_path))
