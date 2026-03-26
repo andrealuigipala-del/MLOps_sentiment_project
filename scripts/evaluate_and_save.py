@@ -86,9 +86,9 @@ def main():
         print("Il nuovo modello è migliore o pari al precedente. Lo pushiamo su Hugging Face...")
         model = AutoModelForSequenceClassification.from_pretrained(new_model_dir)
         tokenizer = AutoTokenizer.from_pretrained(new_model_dir)
-        trainer.push_to_hub()
-        # model.push_to_hub(f"{HF_USERNAME}/{new_model_name}")
-        # tokenizer.push_to_hub(f"{HF_USERNAME}/{new_model_name}")
+        #trainer.push_to_hub()
+        model.push_to_hub(f"{HF_USERNAME}/{new_model_name}")
+        tokenizer.push_to_hub(f"{HF_USERNAME}/{new_model_name}")
         print(f"Modello pushato su Hugging Face: {new_model_name}")
     else:
         print("Il modello precedente è migliore. Nessun push del nuovo modello.")
