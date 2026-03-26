@@ -25,7 +25,7 @@ jobs:
         pip install "transformers[torch]" accelerate datasets
         pip install scikit-learn pandas numpy
         pip install protobuf
-        pip install sentencepiece
+        pip install sentencepiece tiktoken protobuf
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
