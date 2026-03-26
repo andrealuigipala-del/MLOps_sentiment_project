@@ -6,17 +6,16 @@ from sklearn.metrics import f1_score, classification_report
 import pandas as pd
 import random
 from huggingface_hub import snapshot_download
-from datetime import datetime
 import os
 
-HF_USERNAME = "andrealuigipala"  # tuo username su HF
-HF_REPO = "trained-model"        # base del repo
+HF_USERNAME = "andrealuigipala"
+HF_REPO = "trained-model"  # nome fisso sul hub, NON cambiare
 
 # Funzione di valutazione
 def evaluate_model(model_dir, X, y, batch_size=16):
     tokenizer = AutoTokenizer.from_pretrained(
-    "cardiffnlp/twitter-roberta-base-sentiment-latest",
-    use_fast=True
+        "cardiffnlp/twitter-roberta-base-sentiment-latest",
+        use_fast=True
     )
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
     model.eval()
@@ -36,9 +35,7 @@ def evaluate_model(model_dir, X, y, batch_size=16):
     return f1_macro, report
 
 def main():
-    # Timestamp per il nuovo modello
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    new_model_name = f"{HF_REPO}_{timestamp}"
+    local_model_dir = "./data/results/final_model"
 
     # Carica dataset di test
     DATA_PATH = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_Final_Project/refs/heads/main/Twitter_Data.csv"
@@ -54,45 +51,30 @@ def main():
     y_test_small = y_test.iloc[indices].tolist()
 
     # --- Valutazione del nuovo modello locale ---
-    new_model_dir = "./data/results/final_model"
-    print(f"Valutando il nuovo modello da pushare su Hugging Face: {new_model_name}")
-    new_f1, new_report = evaluate_model(new_model_dir, X_test_small, y_test_small)
+    print(f"Valutando il modello locale: {local_model_dir}")
+    new_f1, new_report = evaluate_model(local_model_dir, X_test_small, y_test_small)
     print("Nuovo modello F1 macro:", new_f1)
 
-    # --- Trova modello precedente se esiste ---
-    old_model_path = None
+    # --- Controlla modello precedente su Hugging Face ---
+    old_f1 = -1
     hub_dir = "./hf_models"
     os.makedirs(hub_dir, exist_ok=True)
-
-    # scarica tutto il repo HF e controlla i nomi delle cartelle
     try:
         snapshot_path = snapshot_download(f"{HF_USERNAME}/{HF_REPO}", local_dir=hub_dir, local_dir_use_symlinks=False)
-        # prendi la cartella con prefisso 'trained-model_'
-        candidates = [d for d in os.listdir(snapshot_path) if d.startswith(HF_REPO)]
-        if candidates:
-            candidates.sort(reverse=True)  # ultima versione in cima
-            old_model_path = os.path.join(snapshot_path, candidates[0])
-            print(f"Trovato modello precedente: {candidates[0]}")
-            old_f1, _ = evaluate_model(old_model_path, X_test_small, y_test_small)
-            print("Vecchio modello F1 macro:", old_f1)
-        else:
-            old_f1 = -1
-            print("Nessun modello precedente trovato.")
+        print(f"Trovato modello precedente su Hugging Face: {HF_REPO}")
+        old_f1, _ = evaluate_model(snapshot_path, X_test_small, y_test_small)
+        print("Vecchio modello F1 macro:", old_f1)
     except Exception:
-        old_f1 = -1
-        print("Nessun modello precedente trovato o errore nel download.")
+        print("Nessun modello precedente trovato su Hugging Face.")
 
-    # --- Confronto e push sul Hub ---
-    from transformers import AutoModelForSequenceClassification, AutoTokenizer
-
+    # --- Confronto e push ---
     if new_f1 >= old_f1:
-        print("Il nuovo modello è migliore o pari al precedente. Lo pushiamo su Hugging Face...")
-        model = AutoModelForSequenceClassification.from_pretrained(new_model_dir)
-        tokenizer = AutoTokenizer.from_pretrained(new_model_dir)
-        #trainer.push_to_hub()
-        model.push_to_hub(f"{HF_USERNAME}/{new_model_name}")
-        tokenizer.push_to_hub(f"{HF_USERNAME}/{new_model_name}")
-        print(f"Modello pushato su Hugging Face: {new_model_name}")
+        print("Il nuovo modello è migliore o pari al precedente. Sovrascriviamo su Hugging Face...")
+        model = AutoModelForSequenceClassification.from_pretrained(local_model_dir)
+        tokenizer = AutoTokenizer.from_pretrained(local_model_dir)
+        model.push_to_hub(f"{HF_USERNAME}/{HF_REPO}", use_auth_token=True)
+        tokenizer.push_to_hub(f"{HF_USERNAME}/{HF_REPO}", use_auth_token=True)
+        print(f"Modello pushato su Hugging Face: {HF_REPO}")
     else:
         print("Il modello precedente è migliore. Nessun push del nuovo modello.")
 
