@@ -7,7 +7,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 # Percorso locale dove il modello è stato salvato
-MODEL_PATH = "./models/sentiment_model"
+MODEL_PATH = "./results/final_model"
 
 def load_local_model():
     """Carica il modello salvato localmente"""
