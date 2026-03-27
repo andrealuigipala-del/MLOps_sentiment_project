@@ -7,13 +7,13 @@ Contiene il dataset utilizzato per il training
 -> Twitter_Data.csv
 
 scripts/
-Contiene tutti gli script principali del progetto
+Contiene tutti gli script principali del progetto:
 
-preprocess.py
-train.py
-evaluate_and_save.py
-deploy_huggingface.py
-deploy_local.py
+- preprocess.py
+- train.py
+- evaluate_and_save.py
+- deploy_huggingface.py
+- deploy_local.py
 
 .github/workflows/
 Contiene la pipeline CI/CD (mlops_pipeline.yml)
