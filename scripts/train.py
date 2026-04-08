@@ -101,8 +101,8 @@ if __name__ == "__main__":
 
     X_train, X_test, y_train, y_test = load_dataset(DATA_URL)
 
-    # 500 campioni: statisticamente significativi, veloci con freeze
-    fine_tune_model(
-        X_train[:500], y_train[:500],
-        X_test[:100],  y_test[:100]
-    )
+    # 2000 campioni: statisticamente significativi, veloci con freeze
+  fine_tune_model(
+      X_train[:2000], y_train[:2000],
+      X_test[:400],   y_test[:400]
+  )
