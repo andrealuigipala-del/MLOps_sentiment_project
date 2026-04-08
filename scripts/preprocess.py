@@ -1,40 +1,28 @@
 # scripts/preprocess.py
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 def load_dataset(url, test_size=0.2, random_state=42):
     """
-    Carica un dataset CSV da un URL pubblico, divide in feature e target, 
-    e restituisce train e test split.
-
-    Args:
-        url (str): link al file CSV pubblico
-        test_size (float): proporzione dei dati da usare come test
-        random_state (int): seed per riproducibilità
-
-    Returns:
-        X_train, X_test, y_train, y_test (pd.Series o pd.DataFrame)
+    Carica un dataset CSV, applica lo shift +1 alle label
+    (da -1/0/1 a 0/1/2) e restituisce train/test split.
     """
-    # Carica il CSV dall'URL
     df = pd.read_csv(url)
 
-    # Controlla che ci siano le colonne attese
     if 'clean_text' not in df.columns or 'category' not in df.columns:
-        raise ValueError("Il CSV deve contenere le colonne 'clean_text' e 'category'")
-    
+        raise ValueError("Il CSV deve contenere 'clean_text' e 'category'")
+
     df = df.dropna(subset=['clean_text', 'category'])
-    df['clean_text'] = df['clean_text'].astype(str)   # testo → stringa
-    df['category'] = df['category'] + 1
+    df['clean_text'] = df['clean_text'].astype(str)
+    df['category'] = df['category'] + 1        # shift: -1→0, 0→1, 1→2
     df['category'] = df['category'].astype(int)
-    
-    # Seleziona feature e target
+
     X = df['clean_text']
     y = df['category']
 
-    # Split train/test
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
-    print("fatto!!!")
+
+    print(f"Dataset caricato: {len(X_train)} train, {len(X_test)} test")
     return X_train, X_test, y_train, y_test
