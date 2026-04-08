@@ -21,7 +21,6 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
         MODEL_NAME,
         num_labels=3,
         ignore_mismatched_sizes=True,
-        from_tf=False,
     )
 
     # 2. Freeze del backbone — alleniamo solo il classifier head
