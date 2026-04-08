@@ -1,53 +1,57 @@
 # scripts/train.py
-
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
 from datasets import Dataset
-import torch
 import numpy as np
-from huggingface_hub import login
 import os
 
-def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twitter-roberta-base-sentiment-latest",
-                    output_dir="./results", epochs=3, batch_size=16):
+MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+
+def fine_tune_model(X_train, y_train, X_test, y_test,
+                    output_dir="./results",
+                    epochs=1,
+                    batch_size=16):
     """
-    Fine-tuning di un modello HuggingFace per l'analisi del sentiment.
-
-    Args:
-        X_train, y_train: dati di training (pd.Series)
-        X_test, y_test: dati di test/valutazione (pd.Series)
-        model_name (str): nome modello su HuggingFace Hub
-        output_dir (str): cartella per salvare i pesi del modello
-        epochs (int): numero di epoche di training
-        batch_size (int): batch size per training ed eval
-
-    Returns:
-        trainer: oggetto Trainer già allenato
-        model: modello fine-tunato
-        tokenizer: tokenizer del modello
+    Fine-tuning del modello con freeze del backbone RoBERTa.
+    Solo il classification head viene aggiornato — molto più veloce.
     """
 
     # 1. Tokenizer e modello
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(
-        model_name,
-        num_labels=3,  # negative, neutral, positive
+        MODEL_NAME,
+        num_labels=3,
+        ignore_mismatched_sizes=True
     )
 
-    # 2. Prepara dataset HuggingFace
-    def tokenize_fn(examples):
-        return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=128)
+    # 2. Freeze del backbone — alleniamo solo il classifier head
+    for param in model.roberta.parameters():
+        param.requires_grad = False
 
-    train_dataset = Dataset.from_dict({"text": X_train.tolist(), "labels": y_train.tolist()})
-    test_dataset = Dataset.from_dict({"text": X_test.tolist(), "labels": y_test.tolist()})
+    # 3. Tokenizzazione con max_length=64 (tweet sono corti)
+    def tokenize_fn(examples):
+        return tokenizer(
+            examples["text"],
+            padding="max_length",
+            truncation=True,
+            max_length=64
+        )
+
+    train_dataset = Dataset.from_dict({
+        "text": X_train.tolist(),
+        "labels": y_train.tolist()
+    })
+    test_dataset = Dataset.from_dict({
+        "text": X_test.tolist(),
+        "labels": y_test.tolist()
+    })
 
     train_dataset = train_dataset.map(tokenize_fn, batched=True)
-    test_dataset = test_dataset.map(tokenize_fn, batched=True)
+    test_dataset  = test_dataset.map(tokenize_fn, batched=True)
 
-    # HuggingFace richiede che i tensori labels siano int
     train_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
-    test_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    test_dataset.set_format(type="torch",  columns=["input_ids", "attention_mask", "labels"])
 
-    # 3. TrainingArguments
+    # 4. TrainingArguments
     training_args = TrainingArguments(
         output_dir=output_dir,
         num_train_epochs=epochs,
@@ -59,17 +63,17 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
         save_total_limit=1,
-        push_to_hub=False,  # ora farà il push sul Hub
-
+        push_to_hub=False,
     )
 
-    # 4. Trainer
+    # 5. Compute metrics
     def compute_metrics(eval_pred):
         logits, labels = eval_pred
         predictions = np.argmax(logits, axis=-1)
         accuracy = (predictions == labels).mean()
-        return {"accuracy": accuracy}
+        return {"accuracy": float(accuracy)}
 
+    # 6. Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -78,50 +82,27 @@ def fine_tune_model(X_train, y_train, X_test, y_test, model_name="cardiffnlp/twi
         compute_metrics=compute_metrics
     )
 
-    # 5. Avvia fine-tuning
     trainer.train()
 
-    save_path = "./results/final_model"
+    # 7. Salvataggio
+    save_path = "./data/results/final_model"
+    os.makedirs(save_path, exist_ok=True)
     model.save_pretrained(save_path)
     tokenizer.save_pretrained(save_path)
-    
+    print(f"Modello salvato in {save_path}")
+
     return trainer, model, tokenizer
 
-# Esempio di utilizzo
+
 if __name__ == "__main__":
     from scripts.preprocess import load_dataset
 
-    url = "./data/src/Twitter_Data.csv"
-    X_train, X_test, y_train, y_test = load_dataset(url)
+    DATA_URL = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/Twitter_Data.csv"
 
-    trainer, model, tokenizer = fine_tune_model(X_train[:50], y_train[:50],
-    X_test[:10], y_test[:10])
+    X_train, X_test, y_train, y_test = load_dataset(DATA_URL)
 
-
-  
-    hub_token = os.environ.get("HF_TOKEN")  # GitHub secret
-    hub_model_id = "andrealuigipala/trained-model"
-    
-    # if hub_token:
-    #     print("Push del modello su HuggingFace Hub...")
-    #     # trainer.push_to_hub()
-    #     model.push_to_hub(hub_model_id, token=hub_token)
-    #     tokenizer.push_to_hub(hub_model_id, token=hub_token)
-    #     print(f"Modello pushato su HuggingFace Hub: {hub_model_id}")
-    # else:
-    #     print("HF_TOKEN non trovato, modello salvato solo in locale.")
-
-    # save_path = "./data/results/final_model"
-
-    # model.save_pretrained(save_path)
-    # tokenizer.save_pretrained(save_path)
-
-    import os
-    
-    save_path = "./data/results/final_model"
-    model.save_pretrained(save_path)
-    tokenizer.save_pretrained(save_path)
-    
-    print("CONTENUTO CARTELLA DOPO SALVATAGGIO:")
-    print(os.listdir("./data/results"))
-    print(os.listdir(save_path))
+    # 500 campioni: statisticamente significativi, veloci con freeze
+    fine_tune_model(
+        X_train[:500], y_train[:500],
+        X_test[:100],  y_test[:100]
+    )
