@@ -9,7 +9,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from sklearn.metrics import f1_score
 
 LOG_PATH    = "./data/monitoring/metrics_log.json"
-MODEL_DIR   = "./data/results/final_model"
+MODEL_DIR   = "./data/results/trained_model"
 DATA_URL    = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/data/src/Twitter_Data.csv"
 F1_THRESHOLD = 0.70
 SAMPLE_SIZE  = 150
