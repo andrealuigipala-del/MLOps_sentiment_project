@@ -83,6 +83,7 @@ def main():
     print(f"Campione: {SAMPLE_SIZE} esempi, seed={seed}")
 
     # 4. Valutazione
+    print("Contenuto model dir:", os.listdir(MODEL_DIR))
     f1, preds = evaluate_sample(MODEL_DIR, texts, labels)
     print(f"F1 macro: {f1}")
 
