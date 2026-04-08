@@ -10,45 +10,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        pip install --upgrade pip
-        pip install torch torchvision torchaudio
-        pip install "transformers[torch]" accelerate datasets
-        pip install scikit-learn pandas numpy
-        pip install protobuf
-        pip install sentencepiece tiktoken protobuf
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install "transformers[torch]" accelerate datasets
+          pip install scikit-learn pandas numpy
+          pip install huggingface_hub sentencepiece protobuf
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
 
-    - name: Run training
-      env:
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: python scripts/train.py
+      - name: Run training
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python scripts/train.py
 
-    - name: Upload trained model as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: trained-model
-        path: ./data/results/final_model
+      - name: Upload trained model
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: ./data/results/final_model
 
-    - name: Download trained model artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: trained-model
-        path: ./data/results/final_model
+      - name: Download trained model
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-model
+          path: ./data/results/final_model
 
-    - name: Run evaluation
-      env:
-        HF_USERNAME: ${{ secrets.HF_USERNAME }}
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: python scripts/evaluate_and_save.py
+      - name: Run evaluation and push to HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python scripts/evaluate_and_save.py
+
+      - name: Run monitoring
+        run: python scripts/monitor.py
+
+      - name: Upload monitoring log
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-log
+          path: ./data/monitoring/metrics_log.json
