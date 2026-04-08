@@ -97,7 +97,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
 if __name__ == "__main__":
     from scripts.preprocess import load_dataset
 
-    DATA_URL = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/Twitter_Data.csv"
+    DATA_URL = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/data/src/Twitter_Data.csv"
 
     X_train, X_test, y_train, y_test = load_dataset(DATA_URL)
 
