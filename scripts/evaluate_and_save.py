@@ -10,7 +10,7 @@ from huggingface_hub import snapshot_download
 HF_USERNAME  = "andrealuigipala"
 HF_REPO      = "trained-model"
 MODEL_DIR    = "./data/results/final_model"
-DATA_URL     = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/Twitter_Data.csv"
+DATA_URL     = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/data/src/Twitter_Data.csv"
 SAMPLE_SIZE  = 150
 
 
