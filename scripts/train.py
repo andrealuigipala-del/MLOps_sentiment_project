@@ -85,7 +85,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
     trainer.train()
 
     # 7. Salvataggio
-    save_path = "./data/results/final_model"
+    save_path = "./data/results/trained_model"
     os.makedirs(save_path, exist_ok=True)
     model.save_pretrained(save_path)
     tokenizer.save_pretrained(save_path)
