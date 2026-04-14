@@ -11,7 +11,7 @@ from sklearn.metrics import f1_score
 LOG_PATH    = "./data/monitoring/metrics_log.json"
 MODEL_DIR   = "./data/results/trained_model"
 DATA_URL    = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/data/src/Twitter_Data.csv"
-F1_THRESHOLD = 0.1
+F1_THRESHOLD = 0.7
 SAMPLE_SIZE  = 150
 
 
