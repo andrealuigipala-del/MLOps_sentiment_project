@@ -25,9 +25,9 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
 
     # freeze parziale - primi 6 layer congelati, ultimi 6 liberi
     for i, layer in enumerate(model.roberta.encoder.layer):
-    if i < 6:
-        for param in layer.parameters():
-            param.requires_grad = False                 
+      if i < 6:
+          for param in layer.parameters():
+              param.requires_grad = False                 
 
     # Tokenizzazione con max_length=64 (tweet sono corti)
     def tokenize_fn(examples):
