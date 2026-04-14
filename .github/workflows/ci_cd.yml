@@ -33,9 +33,6 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python scripts/train.py
-
-      - name: Run training
-        run: python scripts/train.py
       
       - name: Run evaluation and push to HuggingFace
         env:
@@ -45,23 +42,10 @@ jobs:
       - name: Run monitoring
         run: python scripts/monitor.py
       
-      - name: Upload monitoring log
-        uses: actions/upload-artifact@v4
-        with:
-          name: monitoring-log
-          path: ./data/monitoring/metrics_log.json
-
-      - name: Run evaluation and push to HuggingFace
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: python scripts/evaluate_and_save.py
-
-      - name: Run monitoring
-        run: python scripts/monitor.py
-
       - name: Upload monitoring log
         uses: actions/upload-artifact@v4
         with:
           name: monitoring-log
           path: ./data/monitoring/metrics_log.json
           if-no-files-found: ignore
+
