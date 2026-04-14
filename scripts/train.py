@@ -104,6 +104,6 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = load_dataset(DATA_URL)
 
     fine_tune_model(
-        X_train[:1000], y_train[:1000],
-        X_test[:200],   y_test[:200]
+        X_train[:10], y_train[:10],
+        X_test[:2],   y_test[:2]
     )
