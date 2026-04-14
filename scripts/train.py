@@ -99,6 +99,6 @@ if __name__ == "__main__":
 
     # 2000 campioni: statisticamente significativi, veloci con freeze
     fine_tune_model(
-        X_train[:50], y_train[:50],
-        X_test[:10],   y_test[:10]
+        X_train[:500], y_train[:500],
+        X_test[:100],   y_test[:100]
     )
