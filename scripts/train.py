@@ -15,7 +15,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
     Solo il classification head viene aggiornato — molto più veloce.
     """
 
-    # 1. Tokenizer e modello
+    # Tokenizer e modello
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_NAME,
@@ -23,11 +23,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
         ignore_mismatched_sizes=True,
     )
 
-    # 2. Freeze del backbone — alleniamo solo il classifier head
-    for param in model.roberta.parameters():
-        param.requires_grad = False
-
-    # 3. Tokenizzazione con max_length=64 (tweet sono corti)
+    # Tokenizzazione con max_length=64 (tweet sono corti)
     def tokenize_fn(examples):
         return tokenizer(
             examples["text"],
@@ -51,7 +47,7 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
     train_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     test_dataset.set_format(type="torch",  columns=["input_ids", "attention_mask", "labels"])
 
-    # 4. TrainingArguments
+    # TrainingArguments
     training_args = TrainingArguments(
         output_dir=output_dir,
         num_train_epochs=epochs,
@@ -66,14 +62,14 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
         push_to_hub=False,
     )
 
-    # 5. Compute metrics
+    # Compute metrics
     def compute_metrics(eval_pred):
         logits, labels = eval_pred
         predictions = np.argmax(logits, axis=-1)
         accuracy = (predictions == labels).mean()
         return {"accuracy": float(accuracy)}
 
-    # 6. Trainer
+    # Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
