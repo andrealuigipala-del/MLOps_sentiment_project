@@ -8,7 +8,7 @@ MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
 def fine_tune_model(X_train, y_train, X_test, y_test,
                     output_dir="./results",
-                    epochs=1,
+                    epochs=3,
                     batch_size=16):
     """
     Fine-tuning del modello con freeze del backbone RoBERTa.
@@ -22,6 +22,12 @@ def fine_tune_model(X_train, y_train, X_test, y_test,
         num_labels=3,
         ignore_mismatched_sizes=True,
     )
+
+    # freeze parziale - primi 6 layer congelati, ultimi 6 liberi
+    for i, layer in enumerate(model.roberta.encoder.layer):
+    if i < 6:
+        for param in layer.parameters():
+            param.requires_grad = False                 
 
     # Tokenizzazione con max_length=64 (tweet sono corti)
     def tokenize_fn(examples):
