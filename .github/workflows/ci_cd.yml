@@ -64,3 +64,4 @@ jobs:
         with:
           name: monitoring-log
           path: ./data/monitoring/metrics_log.json
+          if-no-files-found: ignore
