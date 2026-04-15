@@ -14,7 +14,7 @@
   - monitor.py
 
 - **.github/workflows/**  
-  Contiene la pipeline CI/CD (*mlops_pipeline.yml*)
+  Contiene la pipeline CI/CD (*ci_cd.yml*)
 
 - **notebooks/**  
   Notebook Google Colab per eseguire e testare l’intero progetto
@@ -66,11 +66,22 @@ Sistema di monitoraggio continuo delle performance del modello:
 - Solleva eccezione se il modello scende sotto la soglia, suggerendo la necessità di retraining  
 - Questo sistema permette di tenere sotto controllo la qualità del modello in produzione e intervenire tempestivamente
 
+### Monitoraggio e Log JSON
+
+- Ad ogni esecuzione, `monitor.py` salva un log in formato JSON (`metrics_log.json`) nella cartella `data/monitoring`.  
+- Il log mantiene lo storico delle valutazioni, con informazioni quali numero di run, timestamp, valore F1 macro, distribuzione predizioni e stato alert.  
+- Il file di log viene versionato nel repository e aggiornato automaticamente dalla pipeline CI/CD.
+
+### Visualizzazione monitoraggio in Notebook Colab
+
+- Nel notebook Google Colab incluso, il file di log JSON viene scaricato dal repository e utilizzato per generare un grafico dell'andamento F1 nel tempo.  
+- Il grafico evidenzia i punti di monitoraggio, la soglia di alert e gli eventuali allarmi, facilitando il controllo visivo dello stato del modello nel tempo.
+
 ---
 
 ## PIPELINE CI/CD (GitHub Actions)
 
-**File:** `mlops_pipeline.yml`  
+**File:** `ci_cd.yml`  
 
 La pipeline si attiva automaticamente quando:  
 - Viene fatto push sul branch principale (`main`)  
@@ -83,7 +94,7 @@ La pipeline si attiva automaticamente quando:
 - Esegue la valutazione e confronta il modello con quello precedente  
 - Effettua il deploy se il modello è migliorato  
 - Esegue il monitoraggio delle performance e salva i log  
-- Versiona il log di monitoraggio sul repo per storico
+- Versiona il log di monitoraggio nel repo per lo storico
 
 ---
 
@@ -112,12 +123,3 @@ Modello transformer pre-addestrato per analisi del sentiment su Twitter, fine-tu
   - 0 = negativo  
   - 1 = neutro  
   - 2 = positivo
-
----
-
-```shiftata a (0,1,2) nel preprocessing
-Classi:
-
-0 = negativo
-1 = neutro
-2 = positivo
