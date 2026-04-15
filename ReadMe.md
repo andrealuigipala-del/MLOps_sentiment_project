@@ -11,7 +11,6 @@
   - train.py  
   - evaluate_and_save.py  
   - deploy_huggingface.py  
-  - deploy_local.py  
   - monitor.py
 
 - **.github/workflows/**  
@@ -57,11 +56,6 @@ Script per eseguire inferenza usando il modello fine-tunato caricato da HuggingF
 - Carica modello e tokenizer dal Hub  
 - Crea pipeline di sentiment analysis  
 - Restituisce predizioni con sentiment tradotto in etichette leggibili
-
-### deploy_local.py  
-Script per inferenza con modello salvato in locale:  
-- Carica modello e tokenizer dalla cartella locale  
-- Esegue predizioni su nuovi testi
 
 ### monitor.py  
 Sistema di monitoraggio continuo delle performance del modello:  
