@@ -1,0 +1,15 @@
+[
+  {
+    "run": 1,
+    "timestamp": "2026-04-15T08:24:05.123275",
+    "f1_macro": 0.3914,
+    "sample_seed": 0,
+    "sample_size": 150,
+    "pred_dist": {
+      "negative": 12,
+      "neutral": 39,
+      "positive": 99
+    },
+    "alert": false
+  }
+]
