@@ -1,144 +1,104 @@
-MLOps_sentiment_project for CI/CD deploy
-
+MLOps_sentiment_project per CI/CD e Deploy
 STRUTTURA DEL PROGETTO
-
 data/
-Contiene il dataset utilizzato per il training
--> Twitter_Data.csv
+Contiene il dataset utilizzato per il training → Twitter_Data.csv
 
 scripts/
 Contiene tutti gli script principali del progetto:
 
-- preprocess.py
-- train.py
-- evaluate_and_save.py
-- deploy_huggingface.py
-- deploy_local.py
-
+preprocess.py
+train.py
+evaluate_and_save.py
+deploy_huggingface.py
+deploy_local.py
+monitor.py
 .github/workflows/
 Contiene la pipeline CI/CD (mlops_pipeline.yml)
-notebook_colab.ipynb
-Notebook per eseguire e testare tutto il progetto
 
-----------------------------------------------------------------
-
-NB: per questioni di ottimizzazine delle risorse (e delle tempistiche), poiché sono state usate quelle gratuite (limitate) si è proceduto ad usare il dataset parzialmente, sia in fase di training, sia in fase di valutazione. Aumentando la quantità di dati (e avendo tempo a disposizione) è possibile avere metriche promettenti (accuracy f1 > 0.9)
-
-----------------------------------------------------------------
+notebooks/
+Notebook Google Colab per eseguire e testare l’intero progetto
 
 DESCRIZIONE DEGLI SCRIPT
-
---- preprocess.py
-Questo script serve per caricare e preparare i dati.
+preprocess.py
+Carica e prepara i dati:
 
 Legge un CSV da URL o percorso locale
 Controlla che esistano le colonne “clean_text” e “category”
 Rimuove i valori nulli
 Converte i tipi di dato
+Applica shift alle etichette da (-1,0,1) → (0,1,2) per facilitare il training
 Divide il dataset in train e test (split stratificato)
+Output: X_train, X_test, y_train, y_test
+train.py
+Fine-tuning del modello con partial freezing del backbone RoBERTa:
 
-Output:
-X_train, X_test, y_train, y_test
-
---- train.py
-Questo script esegue il fine-tuning del modello.
-
-Usa il modello HuggingFace:
-cardiffnlp/twitter-roberta-base-sentiment-latest
+Usa il modello HuggingFace cardiffnlp/twitter-roberta-base-sentiment-latest
 Converte i dati in formato HuggingFace Dataset
 Tokenizza i testi
-Addestra il modello con Trainer
-Valuta durante il training
-Salva il modello finale
+Allena il modello con Trainer e valuta durante il training
+Salva il modello fine-tunato
+Output: modello salvato in ./data/results/trained_model
+evaluate_and_save.py
+Script MLOps per valutazione e deploy controllato:
 
-Output:
-Il modello viene salvato in:
-./data/results/final_model
-
---- evaluate_and_save.py
-Questo è lo script principale per la logica MLOps.
-
-Funziona così:
-
-Valuta il modello appena addestrato (F1-score)
-Scarica il modello precedente da Hugging Face (se esiste)
-Confronta le performance
-Se il nuovo modello è migliore o uguale → lo pubblica
-Se è peggiore → non fa nulla
-
-Questo permette un deploy automatico controllato.
-
---- deploy_huggingface.py
-Serve per usare il modello direttamente da Hugging Face.
+Valuta il modello appena addestrato calcolando F1-score macro
+Scarica il modello precedente da HuggingFace Hub (se esiste)
+Confronta le performance:
+Se il nuovo modello è migliore o uguale → lo pubblica sul Hub
+Altrimenti non fa nulla
+Garantisce un deploy automatico controllato e sicuro
+deploy_huggingface.py
+Script per eseguire inferenza usando il modello fine-tunato caricato da HuggingFace Hub:
 
 Carica modello e tokenizer dal Hub
-Crea una pipeline di sentiment analysis
-Restituisce predizioni su nuovi testi
+Crea pipeline di sentiment analysis
+Restituisce predizioni con sentiment tradotto in etichette leggibili
+deploy_local.py
+Script per inferenza con modello salvato in locale:
 
---- deploy_local.py
-Serve per usare il modello salvato in locale.
-
-Carica il modello dalla cartella locale
+Carica modello e tokenizer dalla cartella locale
 Esegue predizioni su nuovi testi
+monitor.py
+Sistema di monitoraggio continuo delle performance del modello:
 
-------------------------------------
-
+Campiona casualmente un sottoinsieme del dataset di test a intervalli regolari (es. ad ogni run della pipeline)
+Valuta F1 macro del modello sul campione
+Registra metriche e distribuzione predizioni in un log JSON versionato nel repo
+Imposta una soglia di alert (default F1=0.7) per segnalare degrado di performance
+Solleva eccezione se il modello scende sotto la soglia, suggerendo la necessità di retraining
+Questo sistema permette di tenere sotto controllo la qualità del modello in produzione e intervenire tempestivamente
 PIPELINE CI/CD (GitHub Actions)
+File: mlops_pipeline.yml
 
---- File: mlops_pipeline.yml
+La pipeline si attiva automaticamente quando:
 
-La pipeline si attiva quando:
+Viene fatto push sul branch principale (main)
+Viene eseguito manualmente tramite workflow dispatch
+Step principali:
 
-viene fatto push su main
-oppure manualmente
-
-Step:
-
-- Clona il repository
-- Installa le dipendenze
-- Esegue il training
-- Salva il modello come artifact
-- Ricarica il modello
-- Esegue la valutazione
-- Confronta con modello precedente
-- Eventuale deploy su Hugging Face
-
--------------------------------------
-
-NOTEBOOK GOOGLE COLAB
-
-Il notebook serve per testare manualmente il progetto.
-
-Cosa fa:
-
-- Installa librerie
-- Clona il repository
-- Importa gli script
-- Carica il dataset
-- Allena il modello (subset dei dati)
-- Valuta le performance (F1-score)
-- Testa le predizioni
-- Permette anche push su GitHub
+Clona il repository
+Installa le dipendenze tramite pip
+Esegue il training del modello
+Esegue la valutazione e confronta il modello con quello precedente
+Effettua il deploy se il modello è migliorato
+Esegue il monitoraggio delle performance e salva i log
+Versiona il log di monitoraggio sul repo per storico
+NOTE SUL TRAINING E RISORSE
+Per limitazioni di risorse e tempistiche (uso di ambienti gratuiti come Colab), il training e la valutazione usano sottoinsiemi ridotti del dataset. Aumentando i dati e potendo utilizzare hardware più potente si possono ottenere metriche migliori (accuracy e F1 superiori a 0.9).
 
 MODELLO UTILIZZATO
-
 cardiffnlp/twitter-roberta-base-sentiment-latest
-
-Modello transformer pre-addestrato per sentiment analysis.
-Viene fine-tuned sul dataset Twitter.
-
-------------------------------------------
+Modello transformer pre-addestrato per analisi del sentiment su Twitter, fine-tunato sul dataset fornito.
 
 DATASET
-
-- Twitter sentiment dataset
+Twitter sentiment dataset
 
 Colonne:
 
-- clean_text → testo
-- category → etichetta
-
+clean_text: testo
+category: etichetta sentiment originale (-1=negativo, 0=neutro, 1=positivo), shiftata a (0,1,2) nel preprocessing
 Classi:
-- 0 = negativo
-- 1 = neutro
-- 2 = positivo
+
+0 = negativo
+1 = neutro
+2 = positivo
