@@ -8,7 +8,7 @@ MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
 def fine_tune_model(X_train, y_train, X_test, y_test,
                     output_dir="./results",
-                    epochs=3,
+                    epochs=2,
                     batch_size=16):
     """
     Fine-tuning del modello con freeze del backbone RoBERTa.
@@ -104,6 +104,6 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = load_dataset(DATA_URL)
 
     fine_tune_model(
-        X_train[:1000], y_train[:1000],
-        X_test[:100],   y_test[:100]
+        X_train[:2500], y_train[:2500],
+        X_test[400],   y_test[:400]
     )
