@@ -49,3 +49,12 @@ jobs:
           path: ./data/monitoring/metrics_log.json
           if-no-files-found: ignore
 
+      - name: Salva monitoring log nel repo
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          mkdir -p data/monitoring
+          git add data/monitoring/metrics_log.json
+          git commit -m "update monitoring log [skip ci]" || echo "nessuna modifica"
+          git push
+
