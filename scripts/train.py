@@ -105,5 +105,5 @@ if __name__ == "__main__":
 
     fine_tune_model(
         X_train[:2500], y_train[:2500],
-        X_test[400],   y_test[:400]
+        X_test[:400],   y_test[:400]
     )
