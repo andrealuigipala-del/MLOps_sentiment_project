@@ -11,5 +11,18 @@
       "positive": 99
     },
     "alert": false
+  },
+  {
+    "run": 2,
+    "timestamp": "2026-04-15T08:35:22.471321",
+    "f1_macro": 0.3906,
+    "sample_seed": 42,
+    "sample_size": 150,
+    "pred_dist": {
+      "negative": 9,
+      "neutral": 35,
+      "positive": 106
+    },
+    "alert": false
   }
 ]
