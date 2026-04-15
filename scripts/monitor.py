@@ -12,7 +12,7 @@ LOG_PATH    = "./data/monitoring/metrics_log.json"
 MODEL_DIR   = "./data/results/trained_model"
 DATA_URL    = "https://raw.githubusercontent.com/andrealuigipala-del/MLOps_sentiment_project/refs/heads/main/data/src/Twitter_Data.csv"
 F1_THRESHOLD = 0.7
-SAMPLE_SIZE  = 150
+SAMPLE_SIZE  = 200
 
 
 def load_log():
