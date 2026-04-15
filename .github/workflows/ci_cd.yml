@@ -56,6 +56,7 @@ jobs:
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
+          git pull origin main
           mkdir -p data/monitoring
           git add data/monitoring/metrics_log.json
           git commit -m "update monitoring log [skip ci]" || echo "nessuna modifica"
