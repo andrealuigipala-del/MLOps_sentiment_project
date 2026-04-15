@@ -50,5 +50,18 @@
       "positive": 65
     },
     "alert": false
+  },
+  {
+    "run": 5,
+    "timestamp": "2026-04-15T15:21:03.187147",
+    "f1_macro": 0.7407,
+    "sample_seed": 168,
+    "sample_size": 150,
+    "pred_dist": {
+      "negative": 30,
+      "neutral": 50,
+      "positive": 70
+    },
+    "alert": false
   }
 ]
