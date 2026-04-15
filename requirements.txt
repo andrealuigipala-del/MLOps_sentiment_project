@@ -1,6 +1,9 @@
-torch
-transformers
+transformers[torch]
+accelerate
 datasets
-pandas
 scikit-learn
+pandas
 numpy
+huggingface_hub
+sentencepiece
+protobuf
